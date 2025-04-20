@@ -1,3 +1,14 @@
-<!DOCTYPE html>
-<div id="div"></div>
-<script>window.render = async (x) => (await mermaid.render('div', x)).svg</script>
+<!doctype html>
+<head>
+    <script src="mermaid.min.js"></script>
+</head>
+<body>
+    <div id="div"></div>
+    <script>
+        window.render = async (x) => {
+            const { svg } = await window.mermaid.render("generated", x);
+            document.getElementById("div").innerHTML = svg;
+            return svg;
+        };
+    </script>
+</body>

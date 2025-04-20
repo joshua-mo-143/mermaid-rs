@@ -2,7 +2,7 @@ use std::{error::Error, sync::Arc};
 
 use error::CompileError;
 use escape_string::escape;
-use headless_chrome::{Browser, Tab};
+use headless_chrome::{protocol::cdp::Page::CaptureScreenshotFormatOption, Browser, Element, Tab};
 use unescape::unescape;
 
 mod error;
@@ -24,7 +24,9 @@ impl Mermaid {
 
         let tab = browser.new_tab()?;
         tab.navigate_to(&format!("data:text/html;charset=utf-8,{}", html_payload))?;
-        tab.evaluate(mermaid_js, false)?;
+        if let Err(e) = tab.evaluate(mermaid_js, true) {
+            println!("Error while evaluating: {e}");
+        };
 
         Ok(Self {
             _browser: browser,
@@ -51,6 +53,32 @@ impl Mermaid {
         }
 
         Ok(slice.to_string())
+    }
+
+    /// Renders a diagram and takes a screenshot
+    ///
+    /// # Example:
+    /// ```
+    /// let mermaid = Mermaid::new();
+    /// let svg = mermaid.render("graph TB\na-->b").expect("Unable to render!");
+    /// ```
+    pub fn render_with_screenshot(
+        &self,
+        input: &str,
+        format: CaptureScreenshotFormatOption,
+    ) -> Result<Vec<u8>, Box<dyn Error>> {
+        let _ = self
+            .tab
+            .evaluate(&format!("render('{}')", escape(input)), true)?;
+
+        let res = self
+            .tab
+            .find_element("#div")
+            .unwrap()
+            .capture_screenshot(format)
+            .unwrap();
+
+        Ok(res)
     }
 }
 
