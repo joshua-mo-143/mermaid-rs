@@ -2,7 +2,7 @@ use std::{error::Error, sync::Arc};
 
 use error::CompileError;
 use escape_string::escape;
-use headless_chrome::{Browser, Tab};
+use headless_chrome::{protocol::cdp::Page::CaptureScreenshotFormatOption, Browser, Tab};
 use unescape::unescape;
 
 mod error;

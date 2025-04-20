@@ -1,4 +1,3 @@
-use headless_chrome::protocol::cdp::Page::CaptureScreenshotFormatOption;
 use mermaid_rs::Mermaid;
 
 fn main() {
